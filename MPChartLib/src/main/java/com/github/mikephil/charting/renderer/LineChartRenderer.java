@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -72,7 +73,6 @@ public class LineChartRenderer extends LineRadarRenderer {
 
     @Override
     public void drawData(Canvas c) {
-
         int width = (int) mViewPortHandler.getChartWidth();
         int height = (int) mViewPortHandler.getChartHeight();
 
@@ -283,6 +283,7 @@ public class LineChartRenderer extends LineRadarRenderer {
     }
 
     private float[] mLineBuffer = new float[4];
+    private float[] mHorizontalLineBuffer = new float[4];
 
     /**
      * Draws a normal line.
@@ -302,6 +303,7 @@ public class LineChartRenderer extends LineRadarRenderer {
         float phaseY = mAnimator.getPhaseY();
 
         mRenderPaint.setStyle(Paint.Style.STROKE);
+        mHorizontalRenderPaint.setStyle(Paint.Style.STROKE);
 
         Canvas canvas = null;
 
@@ -400,8 +402,26 @@ public class LineChartRenderer extends LineRadarRenderer {
             if (e1 != null) {
 
                 int j = 0;
-                for (int x = mXBounds.min; x <= mXBounds.range + mXBounds.min; x++) {
+                Float firstX = null;
+                Float firstY = null;
+                Path p = new Path();
+                int marginLeftPixel = 72;
+                int marginRightPixel = 36;
+                int marginTopPixel = 40;
+                int marginBottomPixel = 50;
+                float width = mViewPortHandler.getChartWidth() - marginLeftPixel - marginRightPixel;
+                float height = mViewPortHandler.getChartHeight() - marginTopPixel - marginBottomPixel;
+                float rangeYChart = mChart.getYChartMax() - mChart.getYChartMin();
+                final int range = mXBounds.range + mXBounds.min;
 
+                final YAxis yAxis = mChart.getAxis(YAxis.AxisDependency.LEFT);
+                if (yAxis != null) {
+                    rangeYChart = yAxis.getAxisMaximum() - yAxis.getAxisMinimum();
+                }
+                final float xStepPixel = (width / mXBounds.max);
+                final float yStepPixel = (height / rangeYChart);
+
+                for (int x = mXBounds.min; x <= range; x++) {
                     e1 = dataSet.getEntryForIndex(x == 0 ? 0 : (x - 1));
                     e2 = dataSet.getEntryForIndex(x);
 
@@ -415,6 +435,22 @@ public class LineChartRenderer extends LineRadarRenderer {
                         mLineBuffer[j++] = e1.getY() * phaseY;
                         mLineBuffer[j++] = e2.getX();
                         mLineBuffer[j++] = e1.getY() * phaseY;
+
+                        if (firstX == null) {
+                            firstX = e1.getX();
+                            firstY = e1.getY();
+                            p.moveTo(firstX * xStepPixel + marginLeftPixel, height - (firstY * yStepPixel - marginBottomPixel));
+                        }
+                        if (firstY != e2.getY() || x == range) {
+                            p.lineTo(e2.getX() * xStepPixel + marginLeftPixel, height - (firstY * yStepPixel - marginBottomPixel));
+                            mHorizontalRenderPaint.setColor(Color.BLACK);
+                            mHorizontalRenderPaint.setStrokeWidth(1);
+                            canvas.drawPath(p, mHorizontalRenderPaint);
+                            firstX = null;
+                            firstY = null;
+                        }
+
+
                     }
 
                     mLineBuffer[j++] = e2.getX();
@@ -425,15 +461,65 @@ public class LineChartRenderer extends LineRadarRenderer {
                     trans.pointValuesToPixel(mLineBuffer);
 
                     final int size = Math.max((mXBounds.range + 1) * pointsPerEntryPair, pointsPerEntryPair) * 2;
-
                     mRenderPaint.setColor(dataSet.getColor());
-
                     canvas.drawLines(mLineBuffer, 0, size, mRenderPaint);
                 }
             }
         }
 
         mRenderPaint.setPathEffect(null);
+    }
+
+    private Path roundedRect(
+            float left, float top, float right, float bottom, float rx, float ry,
+            boolean tl, boolean tr, boolean br, boolean bl
+    ) {
+        Path path = new Path();
+        if (rx < 0) rx = 0;
+        if (ry < 0) ry = 0;
+        float width = right - left;
+        float height = bottom - top;
+        if (rx > width / 2) rx = width / 2;
+        if (ry > height / 2) ry = height / 2;
+        float widthMinusCorners = (width - (2 * rx));
+        float heightMinusCorners = (height - (2 * ry));
+
+        path.moveTo(right, top + ry);
+        if (tr)
+            path.rQuadTo(0, -ry, -rx, -ry);//top-right corner
+        else {
+            path.rLineTo(0, -ry);
+            path.rLineTo(-rx, 0);
+        }
+        path.rLineTo(-widthMinusCorners, 0);
+        if (tl)
+            path.rQuadTo(-rx, 0, -rx, ry); //top-left corner
+        else {
+            path.rLineTo(-rx, 0);
+            path.rLineTo(0, ry);
+        }
+        path.rLineTo(0, heightMinusCorners);
+
+        if (bl)
+            path.rQuadTo(0, ry, rx, ry);//bottom-left corner
+        else {
+            path.rLineTo(0, ry);
+            path.rLineTo(rx, 0);
+        }
+
+        path.rLineTo(widthMinusCorners, 0);
+        if (br)
+            path.rQuadTo(rx, 0, rx, -ry); //bottom-right corner
+        else {
+            path.rLineTo(rx, 0);
+            path.rLineTo(0, -ry);
+        }
+
+        path.rLineTo(0, -heightMinusCorners);
+
+        path.close();//Given close, last lineto can be removed.
+
+        return path;
     }
 
     protected Path mGenerateFilledPathBuffer = new Path();

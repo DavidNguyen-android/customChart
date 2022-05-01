@@ -34,6 +34,7 @@ public abstract class DataRenderer extends Renderer {
      * main paint object used for rendering
      */
     protected Paint mRenderPaint;
+    protected Paint mHorizontalRenderPaint;
 
     /**
      * paint used for highlighting values
@@ -54,6 +55,8 @@ public abstract class DataRenderer extends Renderer {
 
         mRenderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mRenderPaint.setStyle(Style.FILL);
+        mHorizontalRenderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mHorizontalRenderPaint.setStyle(Style.FILL);
 
         mDrawPaint = new Paint(Paint.DITHER_FLAG);
 

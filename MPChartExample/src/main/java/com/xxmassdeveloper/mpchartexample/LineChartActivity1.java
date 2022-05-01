@@ -9,14 +9,16 @@ import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
@@ -53,6 +55,7 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
     private LineChart chart;
     private SeekBar seekBarX, seekBarY;
     private TextView tvX, tvY;
+    private static final int maxValue = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +73,7 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
         seekBarX.setOnSeekBarChangeListener(this);
 
         seekBarY = findViewById(R.id.seekBar2);
-        seekBarY.setMax(180);
+        seekBarY.setMax(maxValue);
         seekBarY.setOnSeekBarChangeListener(this);
 
 
@@ -104,30 +107,32 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
             // chart.setScaleYEnabled(true);
 
             // force pinch zoom along both axis
-            chart.setPinchZoom(true);
+            chart.setPinchZoom(false);
+
         }
 
         XAxis xAxis;
         {   // // X-Axis Style // //
             xAxis = chart.getXAxis();
-
+// disable grid lines
+            xAxis.setDrawGridLines(false);
             // vertical grid lines
-            xAxis.enableGridDashedLine(10f, 10f, 0f);
+//            xAxis.enableGridDashedLine(10f, 10f, 0f);
         }
-
         YAxis yAxis;
         {   // // Y-Axis Style // //
             yAxis = chart.getAxisLeft();
+            Log.d("david", "onCreate: " + Utils.convertDpToPixel(13.125f) + yAxis.getZeroLineWidth());
 
             // disable dual axis (only use LEFT axis)
             chart.getAxisRight().setEnabled(false);
 
-            // horizontal grid lines
-            yAxis.enableGridDashedLine(10f, 10f, 0f);
+            // disable grid lines
+            yAxis.setDrawGridLines(false);
 
             // axis range
-            yAxis.setAxisMaximum(200f);
-            yAxis.setAxisMinimum(-50f);
+            yAxis.setAxisMaximum(110f);
+            yAxis.setAxisMinimum(0f);
         }
 
 
@@ -158,15 +163,15 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
             xAxis.setDrawLimitLinesBehindData(true);
 
             // add limit lines
-            yAxis.addLimitLine(ll1);
-            yAxis.addLimitLine(ll2);
+//            yAxis.addLimitLine(ll1);
+//            yAxis.addLimitLine(ll2);
             //xAxis.addLimitLine(llXAxis);
         }
 
         // add data
-        seekBarX.setProgress(45);
-        seekBarY.setProgress(180);
-        setData(45, 180);
+        seekBarX.setProgress(6);
+        seekBarY.setProgress(maxValue);
+        setData(6, maxValue);
 
         // draw points over time
         chart.animateX(1500);
@@ -181,12 +186,17 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
     private void setData(int count, float range) {
 
         ArrayList<Entry> values = new ArrayList<>();
-
-        for (int i = 0; i < count; i++) {
-
-            float val = (float) (Math.random() * range) - 30;
-            values.add(new Entry(i, val, getResources().getDrawable(R.drawable.star)));
-        }
+        values.add(new Entry(0, 0, getResources().getDrawable(R.drawable.star)));
+        values.add(new Entry(1, 60, getResources().getDrawable(R.drawable.star)));
+        values.add(new Entry(2, 80, getResources().getDrawable(R.drawable.star)));
+        values.add(new Entry(3, 60, getResources().getDrawable(R.drawable.star)));
+        values.add(new Entry(4, 100, getResources().getDrawable(R.drawable.star)));
+        values.add(new Entry(5, 0, getResources().getDrawable(R.drawable.star)));
+//        for (int i = 0; i < count; i++) {
+//
+//            float val = (float) (Math.random() * range);
+//            values.add(new Entry(i, val, getResources().getDrawable(R.drawable.star)));
+//        }
 
         LineDataSet set1;
 
@@ -245,13 +255,14 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
             } else {
                 set1.setFillColor(Color.BLACK);
             }
-
+            set1.setMode(LineDataSet.Mode.STEPPED);
+            set1.setDrawFilled(false);
+            set1.enableDashedLine(1f, 0f, 5f);
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1); // add the data sets
 
             // create a data object with the data sets
             LineData data = new LineData(dataSets);
-
             // set data
             chart.setData(data);
         }
