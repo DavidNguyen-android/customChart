@@ -79,7 +79,6 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
 
         {   // // Chart Style // //
             chart = findViewById(R.id.chart1);
-
             // background color
             chart.setBackgroundColor(Color.WHITE);
 
@@ -186,12 +185,12 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
     private void setData(int count, float range) {
 
         ArrayList<Entry> values = new ArrayList<>();
-        values.add(new Entry(0, 0, getResources().getDrawable(R.drawable.star)));
+        values.add(new Entry(0, 90, getResources().getDrawable(R.drawable.star)));
         values.add(new Entry(1, 60, getResources().getDrawable(R.drawable.star)));
-        values.add(new Entry(2, 80, getResources().getDrawable(R.drawable.star)));
-        values.add(new Entry(3, 60, getResources().getDrawable(R.drawable.star)));
-        values.add(new Entry(4, 100, getResources().getDrawable(R.drawable.star)));
-        values.add(new Entry(5, 0, getResources().getDrawable(R.drawable.star)));
+        values.add(new Entry(2, 90, getResources().getDrawable(R.drawable.star)));
+        values.add(new Entry(3, 90, getResources().getDrawable(R.drawable.star)));
+        values.add(new Entry(4, 10, getResources().getDrawable(R.drawable.star)));
+        values.add(new Entry(5, 90, getResources().getDrawable(R.drawable.star)));
 //        for (int i = 0; i < count; i++) {
 //
 //            float val = (float) (Math.random() * range);
@@ -203,14 +202,14 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
         if (chart.getData() != null &&
                 chart.getData().getDataSetCount() > 0) {
             set1 = (LineDataSet) chart.getData().getDataSetByIndex(0);
-            set1.setValues(values);
+            set1.setColors(new int[]{android.R.color.holo_red_dark , android.R.color.holo_blue_dark} , this);
+            set1.setEntries(values);
             set1.notifyDataSetChanged();
             chart.getData().notifyDataChanged();
             chart.notifyDataSetChanged();
         } else {
             // create a dataset and give it a type
             set1 = new LineDataSet(values, "DataSet 1");
-
             set1.setDrawIcons(false);
 
             // draw dashed line

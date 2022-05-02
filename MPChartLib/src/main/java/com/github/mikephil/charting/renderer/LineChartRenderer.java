@@ -6,10 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -283,7 +283,7 @@ public class LineChartRenderer extends LineRadarRenderer {
     }
 
     private float[] mLineBuffer = new float[4];
-    private float[] mHorizontalLineBuffer = new float[4];
+    private float[] mBodyBuffers = new float[4];
 
     /**
      * Draws a normal line.
@@ -402,24 +402,11 @@ public class LineChartRenderer extends LineRadarRenderer {
             if (e1 != null) {
 
                 int j = 0;
-                Float firstX = null;
-                Float firstY = null;
-                Path p = new Path();
-                int marginLeftPixel = 72;
-                int marginRightPixel = 36;
-                int marginTopPixel = 40;
-                int marginBottomPixel = 50;
-                float width = mViewPortHandler.getChartWidth() - marginLeftPixel - marginRightPixel;
-                float height = mViewPortHandler.getChartHeight() - marginTopPixel - marginBottomPixel;
-                float rangeYChart = mChart.getYChartMax() - mChart.getYChartMin();
                 final int range = mXBounds.range + mXBounds.min;
 
-                final YAxis yAxis = mChart.getAxis(YAxis.AxisDependency.LEFT);
-                if (yAxis != null) {
-                    rangeYChart = yAxis.getAxisMaximum() - yAxis.getAxisMinimum();
-                }
-                final float xStepPixel = (width / mXBounds.max);
-                final float yStepPixel = (height / rangeYChart);
+                Float firstX = null;
+                Float firstY = null;
+                Float previousY = null;
 
                 for (int x = mXBounds.min; x <= range; x++) {
                     e1 = dataSet.getEntryForIndex(x == 0 ? 0 : (x - 1));
@@ -439,18 +426,47 @@ public class LineChartRenderer extends LineRadarRenderer {
                         if (firstX == null) {
                             firstX = e1.getX();
                             firstY = e1.getY();
-                            p.moveTo(firstX * xStepPixel + marginLeftPixel, height - (firstY * yStepPixel - marginBottomPixel));
                         }
                         if (firstY != e2.getY() || x == range) {
-                            p.lineTo(e2.getX() * xStepPixel + marginLeftPixel, height - (firstY * yStepPixel - marginBottomPixel));
-                            mHorizontalRenderPaint.setColor(Color.BLACK);
-                            mHorizontalRenderPaint.setStrokeWidth(1);
+                            final double currentY = firstY;
+                            final double nextY = e2.getY();
+
+                            mBodyBuffers[0] = firstX;
+                            mBodyBuffers[1] = (firstY - 2) * phaseY;
+                            mBodyBuffers[2] = e2.getX();
+                            mBodyBuffers[3] = (firstY + 2) * phaseY;
+
+                            trans.pointValuesToPixel(mBodyBuffers);
+                            Path p;
+                            boolean tl = false;
+                            boolean bl = false;
+                            boolean tr = false;
+                            boolean br = false;
+                            if (previousY != null) {
+                                if (previousY > firstY) {
+                                    bl = true;
+                                } else {
+                                    tl = true;
+                                }
+                            }
+                            if (currentY > nextY) {
+                                tr = true;
+                            } else {
+                                br = true;
+                            }
+                            Log.d("david", "drawLinear: previousY : " + previousY +", firstY: "+ firstY);
+                            Log.d("david", "drawLinear: tl: " + tl +", tr: "+ tr+", br: "+ br+", bl: "+ bl);
+                            p = roundedRect(
+                                    mBodyBuffers[0], mBodyBuffers[3],
+                                    mBodyBuffers[2], mBodyBuffers[1],
+                                    35, 35, tl, tr, br, bl
+                            );
+                            mHorizontalRenderPaint.setStyle(Paint.Style.FILL);
                             canvas.drawPath(p, mHorizontalRenderPaint);
+                            previousY = firstY;
                             firstX = null;
                             firstY = null;
                         }
-
-
                     }
 
                     mLineBuffer[j++] = e2.getX();
