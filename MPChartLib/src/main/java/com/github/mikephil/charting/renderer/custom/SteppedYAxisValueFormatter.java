@@ -1,4 +1,4 @@
-package com.github.mikephil.charting.renderer;
+package com.github.mikephil.charting.renderer.custom;
 
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;

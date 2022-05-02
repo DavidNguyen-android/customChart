@@ -1,12 +1,12 @@
 
-package com.github.mikephil.charting.charts;
+package com.github.mikephil.charting.charts.custom;
 
 import android.content.Context;
 import android.util.AttributeSet;
 
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
-import com.github.mikephil.charting.renderer.SteppedLineChartRenderer;
+import com.github.mikephil.charting.renderer.custom.SteppedLineChartRenderer;
 
 /**
  * Chart that draws lines, surfaces, circles, ...

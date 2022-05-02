@@ -1,4 +1,4 @@
-package com.github.mikephil.charting.renderer;
+package com.github.mikephil.charting.renderer.custom;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -17,6 +17,7 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.renderer.LineRadarRenderer;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.MPPointF;

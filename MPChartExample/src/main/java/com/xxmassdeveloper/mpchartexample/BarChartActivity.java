@@ -4,10 +4,10 @@ package com.xxmassdeveloper.mpchartexample;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +16,9 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.BarChart;
+import androidx.core.content.ContextCompat;
+
+import com.github.mikephil.charting.charts.custom.DateOfMonthBarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.Legend.LegendForm;
 import com.github.mikephil.charting.components.XAxis;
@@ -33,20 +35,18 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.Fill;
 import com.github.mikephil.charting.utils.MPPointF;
-import com.xxmassdeveloper.mpchartexample.custom.DayAxisValueFormatter;
+import com.xxmassdeveloper.mpchartexample.custom.DateOfMonthAxisValueFormatter;
 import com.xxmassdeveloper.mpchartexample.custom.MyAxisValueFormatter;
 import com.xxmassdeveloper.mpchartexample.custom.XYMarkerView;
 import com.xxmassdeveloper.mpchartexample.notimportant.DemoBase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class BarChartActivity extends DemoBase implements OnSeekBarChangeListener,
         OnChartValueSelectedListener {
 
-    private BarChart chart;
+    private DateOfMonthBarChart chart;
     private SeekBar seekBarX, seekBarY;
     private TextView tvX, tvY;
 
@@ -78,15 +78,16 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
 
         // if more than 60 entries are displayed in the chart, no values will be
         // drawn
-        chart.setMaxVisibleValueCount(60);
+//        chart.setMaxVisibleValueCount(60);
 
         // scaling can now only be done on x- and y-axis separately
         chart.setPinchZoom(false);
+        chart.setScaleEnabled(false);
 
         chart.setDrawGridBackground(false);
         // chart.setDrawYLabels(false);
 
-        IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(chart);
+        IAxisValueFormatter xAxisFormatter = new DateOfMonthAxisValueFormatter(chart);
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxisPosition.BOTTOM);
@@ -107,6 +108,7 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
         YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setEnabled(false);
         rightAxis.setDrawGridLines(false);
         rightAxis.setTypeface(tfLight);
         rightAxis.setLabelCount(8, false);
@@ -125,12 +127,12 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
         l.setXEntrySpace(4f);
 
         XYMarkerView mv = new XYMarkerView(this, xAxisFormatter);
-        mv.setChartView(chart); // For bounds control
-        chart.setMarker(mv); // Set the marker to the chart
+//        mv.setChartView(chart); // For bounds control
+//        chart.setMarker(mv); // Set the marker to the chart
 
         // setting data
-        seekBarY.setProgress(50);
-        seekBarX.setProgress(12);
+        seekBarY.setProgress(100);
+        seekBarX.setProgress(31);
 
         // chart.setDrawLegend(false);
     }
@@ -156,7 +158,7 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
         if (chart.getData() != null &&
                 chart.getData().getDataSetCount() > 0) {
             set1 = (BarDataSet) chart.getData().getDataSetByIndex(0);
-            set1.setValues(values);
+            set1.setEntries(values);
             chart.getData().notifyDataChanged();
             chart.notifyDataSetChanged();
 
@@ -164,26 +166,8 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
             set1 = new BarDataSet(values, "The year 2017");
 
             set1.setDrawIcons(false);
-
-            int startColor1 = ContextCompat.getColor(this, android.R.color.holo_orange_light);
-            int startColor2 = ContextCompat.getColor(this, android.R.color.holo_blue_light);
-            int startColor3 = ContextCompat.getColor(this, android.R.color.holo_orange_light);
-            int startColor4 = ContextCompat.getColor(this, android.R.color.holo_green_light);
-            int startColor5 = ContextCompat.getColor(this, android.R.color.holo_red_light);
-            int endColor1 = ContextCompat.getColor(this, android.R.color.holo_blue_dark);
-            int endColor2 = ContextCompat.getColor(this, android.R.color.holo_purple);
-            int endColor3 = ContextCompat.getColor(this, android.R.color.holo_green_dark);
-            int endColor4 = ContextCompat.getColor(this, android.R.color.holo_red_dark);
-            int endColor5 = ContextCompat.getColor(this, android.R.color.holo_orange_dark);
-
-            List<Fill> gradientFills = new ArrayList<>();
-            gradientFills.add(new Fill(startColor1, endColor1));
-            gradientFills.add(new Fill(startColor2, endColor2));
-            gradientFills.add(new Fill(startColor3, endColor3));
-            gradientFills.add(new Fill(startColor4, endColor4));
-            gradientFills.add(new Fill(startColor5, endColor5));
-
-            set1.setFills(gradientFills);
+            set1.setColor(Color.GRAY);
+            set1.setHighLightColor(Color.BLUE);
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1);
@@ -191,7 +175,7 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
             BarData data = new BarData(dataSets);
             data.setValueTextSize(10f);
             data.setValueTypeface(tfLight);
-            data.setBarWidth(0.9f);
+            data.setBarWidth(0.6f);
 
             chart.setData(data);
         }

@@ -1,5 +1,5 @@
 
-package com.github.mikephil.charting.charts;
+package com.github.mikephil.charting.charts.custom;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.components.YAxis.AxisDependency;
@@ -21,7 +22,6 @@ import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.ChartHighlighter;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.dataprovider.BarLineScatterCandleBubbleDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IBarLineScatterCandleBubbleDataSet;
 import com.github.mikephil.charting.jobs.AnimatedMoveViewJob;
 import com.github.mikephil.charting.jobs.AnimatedZoomJob;
@@ -29,9 +29,9 @@ import com.github.mikephil.charting.jobs.MoveViewJob;
 import com.github.mikephil.charting.jobs.ZoomJob;
 import com.github.mikephil.charting.listener.BarLineChartTouchListener;
 import com.github.mikephil.charting.listener.OnDrawListener;
-import com.github.mikephil.charting.renderer.SteppedYAxisRender;
-import com.github.mikephil.charting.renderer.XAxisRenderer;
 import com.github.mikephil.charting.renderer.YAxisRenderer;
+import com.github.mikephil.charting.renderer.custom.DateOfMonthXAxisRender;
+import com.github.mikephil.charting.renderer.custom.DateOfWeekXAxisRender;
 import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Transformer;
@@ -43,7 +43,7 @@ import com.github.mikephil.charting.utils.Utils;
  * @author Philipp Jahoda
  */
 @SuppressLint("RtlHardcoded")
-public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubbleData<? extends
+public abstract class DateOfWeekBarChartBase<T extends BarLineScatterCandleBubbleData<? extends
         IBarLineScatterCandleBubbleDataSet<? extends Entry>>>
         extends BarLineChartBase<T> {
 
@@ -128,26 +128,26 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
      */
     protected YAxis mAxisRight;
 
-    protected SteppedYAxisRender mAxisRendererLeft;
+    protected YAxisRenderer mAxisRendererLeft;
     protected YAxisRenderer mAxisRendererRight;
 
     protected Transformer mLeftAxisTransformer;
     protected Transformer mRightAxisTransformer;
 
-    protected XAxisRenderer mXAxisRenderer;
+    protected DateOfWeekXAxisRender mXAxisRenderer;
 
     // /** the approximator object used for data filtering */
     // private Approximator mApproximator;
 
-    public SteppedBarLineChartBase(Context context, AttributeSet attrs, int defStyle) {
+    public DateOfWeekBarChartBase(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
-    public SteppedBarLineChartBase(Context context, AttributeSet attrs) {
+    public DateOfWeekBarChartBase(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SteppedBarLineChartBase(Context context) {
+    public DateOfWeekBarChartBase(Context context) {
         super(context);
     }
 
@@ -161,10 +161,10 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
         mLeftAxisTransformer = new Transformer(mViewPortHandler);
         mRightAxisTransformer = new Transformer(mViewPortHandler);
 
-        mAxisRendererLeft = new SteppedYAxisRender(mViewPortHandler, mAxisLeft, mLeftAxisTransformer);
+        mAxisRendererLeft = new YAxisRenderer(mViewPortHandler, mAxisLeft, mLeftAxisTransformer);
         mAxisRendererRight = new YAxisRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer);
 
-        mXAxisRenderer = new XAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer);
+        mXAxisRenderer = new DateOfWeekXAxisRender(mViewPortHandler, mXAxis, mLeftAxisTransformer);
 
         setHighlighter(new ChartHighlighter(this));
 
@@ -1235,8 +1235,8 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
 
     /**
      * When disabled, the data and/or highlights will not be clipped to contentRect. Disabling this option can
-     *   be useful, when the data lies fully within the content rect, but is drawn in such a way (such as thick lines)
-     *   that there is unwanted clipping.
+     * be useful, when the data lies fully within the content rect, but is drawn in such a way (such as thick lines)
+     * that there is unwanted clipping.
      *
      * @param enabled
      */
@@ -1256,8 +1256,8 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
 
     /**
      * When disabled, the data and/or highlights will not be clipped to contentRect. Disabling this option can
-     *   be useful, when the data lies fully within the content rect, but is drawn in such a way (such as thick lines)
-     *   that there is unwanted clipping.
+     * be useful, when the data lies fully within the content rect, but is drawn in such a way (such as thick lines)
+     * that there is unwanted clipping.
      *
      * @return
      */
@@ -1538,7 +1538,7 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
         return mViewPortHandler.hasNoDragOffset();
     }
 
-    public XAxisRenderer getRendererXAxis() {
+    public DateOfWeekXAxisRender getRendererDateOfWeekXAxis() {
         return mXAxisRenderer;
     }
 
@@ -1547,11 +1547,11 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
      *
      * @param xAxisRenderer
      */
-    public void setXAxisRenderer(XAxisRenderer xAxisRenderer) {
+    public void setDateOfWeekXAxisRenderer(DateOfWeekXAxisRender xAxisRenderer) {
         mXAxisRenderer = xAxisRenderer;
     }
 
-    public SteppedYAxisRender getSteppedRendererLeftYAxis() {
+    public YAxisRenderer getRendererLeftYAxis() {
         return mAxisRendererLeft;
     }
 
@@ -1560,7 +1560,7 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
      *
      * @param rendererLeftYAxis
      */
-    public void setSteppedRendererLeftYAxis(SteppedYAxisRender rendererLeftYAxis) {
+    public void setRendererLeftYAxis(YAxisRenderer rendererLeftYAxis) {
         mAxisRendererLeft = rendererLeftYAxis;
     }
 

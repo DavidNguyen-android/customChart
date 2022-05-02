@@ -1,4 +1,4 @@
-package com.github.mikephil.charting.renderer;
+package com.github.mikephil.charting.renderer.custom;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,6 +8,7 @@ import android.graphics.RectF;
 
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.renderer.AxisRenderer;
 import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.Utils;
