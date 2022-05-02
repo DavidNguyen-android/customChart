@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.charts.LineChart;
@@ -27,7 +28,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 
-public class LineChartRenderer extends LineRadarRenderer {
+public class SteppedLineChartRenderer extends LineRadarRenderer {
 
     protected LineDataProvider mChart;
 
@@ -56,8 +57,8 @@ public class LineChartRenderer extends LineRadarRenderer {
     protected Path cubicPath = new Path();
     protected Path cubicFillPath = new Path();
 
-    public LineChartRenderer(LineDataProvider chart, ChartAnimator animator,
-                             ViewPortHandler viewPortHandler) {
+    public SteppedLineChartRenderer(LineDataProvider chart, ChartAnimator animator,
+                                    ViewPortHandler viewPortHandler) {
         super(animator, viewPortHandler);
         mChart = chart;
 
@@ -72,7 +73,6 @@ public class LineChartRenderer extends LineRadarRenderer {
 
     @Override
     public void drawData(Canvas c) {
-
         int width = (int) mViewPortHandler.getChartWidth();
         int height = (int) mViewPortHandler.getChartHeight();
 
@@ -283,6 +283,7 @@ public class LineChartRenderer extends LineRadarRenderer {
     }
 
     private float[] mLineBuffer = new float[4];
+    private float[] mBodyBuffers = new float[4];
 
     /**
      * Draws a normal line.
@@ -302,6 +303,7 @@ public class LineChartRenderer extends LineRadarRenderer {
         float phaseY = mAnimator.getPhaseY();
 
         mRenderPaint.setStyle(Paint.Style.STROKE);
+        mHorizontalRenderPaint.setStyle(Paint.Style.STROKE);
 
         Canvas canvas = null;
 
@@ -400,8 +402,13 @@ public class LineChartRenderer extends LineRadarRenderer {
             if (e1 != null) {
 
                 int j = 0;
-                for (int x = mXBounds.min; x <= mXBounds.range + mXBounds.min; x++) {
+                final int range = mXBounds.range + mXBounds.min;
 
+                Float firstX = null;
+                Float firstY = null;
+                Float previousY = null;
+
+                for (int x = mXBounds.min; x <= range; x++) {
                     e1 = dataSet.getEntryForIndex(x == 0 ? 0 : (x - 1));
                     e2 = dataSet.getEntryForIndex(x);
 
@@ -415,6 +422,51 @@ public class LineChartRenderer extends LineRadarRenderer {
                         mLineBuffer[j++] = e1.getY() * phaseY;
                         mLineBuffer[j++] = e2.getX();
                         mLineBuffer[j++] = e1.getY() * phaseY;
+
+                        if (firstX == null) {
+                            firstX = e1.getX();
+                            firstY = e1.getY();
+                        }
+                        if (firstY != e2.getY() || x == range) {
+                            final double currentY = firstY;
+                            final double nextY = e2.getY();
+
+                            mBodyBuffers[0] = firstX;
+                            mBodyBuffers[1] = (firstY - 0.05f) * phaseY;
+                            mBodyBuffers[2] = e2.getX();
+                            mBodyBuffers[3] = (firstY + 0.05f) * phaseY;
+
+                            trans.pointValuesToPixel(mBodyBuffers);
+                            Path p;
+                            boolean tl = false;
+                            boolean bl = false;
+                            boolean tr = false;
+                            boolean br = false;
+                            if (previousY != null) {
+                                if (previousY > firstY) {
+                                    bl = true;
+                                } else {
+                                    tl = true;
+                                }
+                            }
+                            if (currentY > nextY) {
+                                tr = true;
+                            } else {
+                                br = true;
+                            }
+                            Log.d("david", "drawLinear: previousY : " + previousY +", firstY: "+ firstY);
+                            Log.d("david", "drawLinear: tl: " + tl +", tr: "+ tr+", br: "+ br+", bl: "+ bl);
+                            p = roundedRect(
+                                    mBodyBuffers[0], mBodyBuffers[3],
+                                    mBodyBuffers[2], mBodyBuffers[1],
+                                    35, 35, tl, tr, br, bl
+                            );
+                            mRenderPaint.setStyle(Paint.Style.FILL);
+                            canvas.drawPath(p, mRenderPaint);
+                            previousY = firstY;
+                            firstX = null;
+                            firstY = null;
+                        }
                     }
 
                     mLineBuffer[j++] = e2.getX();
@@ -425,15 +477,65 @@ public class LineChartRenderer extends LineRadarRenderer {
                     trans.pointValuesToPixel(mLineBuffer);
 
                     final int size = Math.max((mXBounds.range + 1) * pointsPerEntryPair, pointsPerEntryPair) * 2;
-
                     mRenderPaint.setColor(dataSet.getColor());
-
                     canvas.drawLines(mLineBuffer, 0, size, mRenderPaint);
                 }
             }
         }
 
         mRenderPaint.setPathEffect(null);
+    }
+
+    private Path roundedRect(
+            float left, float top, float right, float bottom, float rx, float ry,
+            boolean tl, boolean tr, boolean br, boolean bl
+    ) {
+        Path path = new Path();
+        if (rx < 0) rx = 0;
+        if (ry < 0) ry = 0;
+        float width = right - left;
+        float height = bottom - top;
+        if (rx > width / 2) rx = width / 2;
+        if (ry > height / 2) ry = height / 2;
+        float widthMinusCorners = (width - (2 * rx));
+        float heightMinusCorners = (height - (2 * ry));
+
+        path.moveTo(right, top + ry);
+        if (tr)
+            path.rQuadTo(0, -ry, -rx, -ry);//top-right corner
+        else {
+            path.rLineTo(0, -ry);
+            path.rLineTo(-rx, 0);
+        }
+        path.rLineTo(-widthMinusCorners, 0);
+        if (tl)
+            path.rQuadTo(-rx, 0, -rx, ry); //top-left corner
+        else {
+            path.rLineTo(-rx, 0);
+            path.rLineTo(0, ry);
+        }
+        path.rLineTo(0, heightMinusCorners);
+
+        if (bl)
+            path.rQuadTo(0, ry, rx, ry);//bottom-left corner
+        else {
+            path.rLineTo(0, ry);
+            path.rLineTo(rx, 0);
+        }
+
+        path.rLineTo(widthMinusCorners, 0);
+        if (br)
+            path.rQuadTo(rx, 0, rx, -ry); //bottom-right corner
+        else {
+            path.rLineTo(rx, 0);
+            path.rLineTo(0, -ry);
+        }
+
+        path.rLineTo(0, -heightMinusCorners);
+
+        path.close();//Given close, last lineto can be removed.
+
+        return path;
     }
 
     protected Path mGenerateFilledPathBuffer = new Path();

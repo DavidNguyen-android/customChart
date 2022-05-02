@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,7 +24,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.SteppedLineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.Legend.LegendForm;
 import com.github.mikephil.charting.components.LimitLine;
@@ -32,19 +35,23 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IFillFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.renderer.SteppedYAxisValueFormatter;
 import com.github.mikephil.charting.utils.Utils;
 import com.xxmassdeveloper.mpchartexample.custom.MyMarkerView;
 import com.xxmassdeveloper.mpchartexample.notimportant.DemoBase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
- * Example of a heavily customized {@link LineChart} with limit lines, custom line shapes, etc.
+ * Example of a heavily customized {@link SteppedLineChart} with limit lines, custom line shapes, etc.
  *
  * @since 1.7.4
  * @version 3.1.0
@@ -52,7 +59,7 @@ import java.util.List;
 public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListener,
         OnChartValueSelectedListener {
 
-    private LineChart chart;
+    private SteppedLineChart chart;
     private SeekBar seekBarX, seekBarY;
     private TextView tvX, tvY;
     private static final int maxValue = 100;
@@ -128,10 +135,11 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
 
             // disable grid lines
             yAxis.setDrawGridLines(false);
-
+            yAxis.setValueFormatter(new SteppedYAxisValueFormatter());
+            yAxis.setLabelCount(4);
             // axis range
-            yAxis.setAxisMaximum(110f);
-            yAxis.setAxisMinimum(0f);
+            yAxis.setAxisMaximum(3.2f);
+            yAxis.setAxisMinimum(-0.2f);
         }
 
 
@@ -170,7 +178,12 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
         // add data
         seekBarX.setProgress(6);
         seekBarY.setProgress(maxValue);
-        setData(6, maxValue);
+        seekBarX.post(new Runnable() {
+            @Override
+            public void run() {
+                setData(6, maxValue);
+            }
+        });
 
         // draw points over time
         chart.animateX(1500);
@@ -185,24 +198,31 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
     private void setData(int count, float range) {
 
         ArrayList<Entry> values = new ArrayList<>();
-        values.add(new Entry(0, 90, getResources().getDrawable(R.drawable.star)));
-        values.add(new Entry(1, 60, getResources().getDrawable(R.drawable.star)));
-        values.add(new Entry(2, 90, getResources().getDrawable(R.drawable.star)));
-        values.add(new Entry(3, 90, getResources().getDrawable(R.drawable.star)));
-        values.add(new Entry(4, 10, getResources().getDrawable(R.drawable.star)));
-        values.add(new Entry(5, 90, getResources().getDrawable(R.drawable.star)));
-//        for (int i = 0; i < count; i++) {
-//
-//            float val = (float) (Math.random() * range);
-//            values.add(new Entry(i, val, getResources().getDrawable(R.drawable.star)));
-//        }
+
+        for (int i = 0; i < count; i++) {
+
+            float val = (float) (new Random().nextInt(4));
+            values.add(new Entry(i, val, getResources().getDrawable(R.drawable.star)));
+        }
 
         LineDataSet set1;
 
         if (chart.getData() != null &&
                 chart.getData().getDataSetCount() > 0) {
             set1 = (LineDataSet) chart.getData().getDataSetByIndex(0);
-            set1.setColors(new int[]{android.R.color.holo_red_dark , android.R.color.holo_blue_dark} , this);
+            set1.setDrawValues(false);
+            int[] colors = {
+                    Color.RED,
+                    Color.YELLOW,
+                    Color.BLUE,
+                    Color.DKGRAY,
+            };
+            final LinearGradient gradient = new LinearGradient(
+                    0f, chart.getHeight(), 0f, 0f,
+                    colors, null,
+                    Shader.TileMode.REPEAT);
+            Paint paint = chart.getRenderer().getPaintRender();
+            paint.setShader(gradient);
             set1.setEntries(values);
             set1.notifyDataSetChanged();
             chart.getData().notifyDataChanged();
@@ -221,7 +241,7 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
 
             // line thickness and point size
             set1.setLineWidth(1f);
-            set1.setCircleRadius(3f);
+            set1.setCircleRadius(4f);
 
             // draw points as solid circles
             set1.setDrawCircleHole(false);
@@ -433,7 +453,7 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
         tvX.setText(String.valueOf(seekBarX.getProgress()));
         tvY.setText(String.valueOf(seekBarY.getProgress()));
 
-        setData(seekBarX.getProgress(), seekBarY.getProgress());
+        setData(seekBarX.getProgress(), 3.5f);
 
         // redraw
         chart.invalidate();
