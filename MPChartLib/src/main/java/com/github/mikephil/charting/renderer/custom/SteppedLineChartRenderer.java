@@ -443,26 +443,44 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
                             boolean bl = false;
                             boolean tr = false;
                             boolean br = false;
+
+                            boolean tlCurved = false;
+                            boolean blCurved = false;
+                            boolean trCurved = false;
+                            boolean brCurved = false;
+
                             if (previousY != null) {
                                 if (previousY > firstY) {
                                     bl = true;
+                                    tlCurved = true;
                                 } else {
                                     tl = true;
+                                    blCurved = true;
                                 }
                             }
                             if (currentY > nextY) {
                                 tr = true;
+                                brCurved = true;
                             } else {
                                 br = true;
+                                trCurved = true;
                             }
-                            Log.d("david", "drawLinear: previousY : " + previousY +", firstY: "+ firstY);
-                            Log.d("david", "drawLinear: tl: " + tl +", tr: "+ tr+", br: "+ br+", bl: "+ bl);
+                            Log.d("david", "drawLinear: previousY : " + previousY + ", firstY: " + firstY);
+                            Log.d("david", "drawLinear: tl: " + tl + ", tr: " + tr + ", br: " + br + ", bl: " + bl);
+                            final float strokeWidth = 3f;
+                            final float radius = 20f;
                             p = roundedRect(
-                                    mBodyBuffers[0], mBodyBuffers[3],
-                                    mBodyBuffers[2], mBodyBuffers[1],
-                                    35, 35, tl, tr, br, bl
+                                    mBodyBuffers[0] - strokeWidth / 2, mBodyBuffers[3],
+                                    mBodyBuffers[2] + strokeWidth / 2, mBodyBuffers[1],
+                                    radius, radius, tl, tr, br, bl
                             );
+
                             mRenderPaint.setStyle(Paint.Style.FILL);
+                            mRenderPaint.setStrokeWidth(strokeWidth);
+                            canvas.drawPath(p, mRenderPaint);
+                            mRenderPaint.setStyle(Paint.Style.FILL);
+                            p = drawCurvedArrow(mBodyBuffers[0], mBodyBuffers[3],
+                                    mBodyBuffers[2], mBodyBuffers[1], radius, tlCurved, trCurved, brCurved, blCurved);
                             canvas.drawPath(p, mRenderPaint);
                             previousY = firstY;
                             firstX = null;
@@ -536,6 +554,63 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
 
         path.close();//Given close, last lineto can be removed.
 
+        return path;
+    }
+
+    public Path drawCurvedArrow(float x1, float y1, float x2, float y2, float radius, boolean tl, boolean tr, boolean br, boolean bl) {
+        float curveRadius = Math.min((x2 - x1) / 2, radius);
+        final Path path = new Path();
+        float midY = y1 + ((y2 - y1) / 2);
+        float yDiff = midY - y1;
+
+        if (tr && tl) {
+            //tl
+            path.moveTo(x1, y1 - curveRadius - yDiff);
+            path.cubicTo(x1, y1 - yDiff, x1, midY - yDiff, x1 + curveRadius, midY - yDiff);
+            path.lineTo(x1, midY - yDiff);
+            //tr
+            path.moveTo(x2, y1 - curveRadius - yDiff);
+            path.cubicTo(x2, y1 - yDiff, x2, midY - yDiff, x2 - curveRadius, midY - yDiff);
+            path.lineTo(x2, midY - yDiff);
+            path.close();
+        } else {
+            if (tl) {
+                path.moveTo(x1, y1 - curveRadius - yDiff);
+                path.cubicTo(x1, y1 - yDiff, x1, midY - yDiff, x1 + curveRadius, midY - yDiff);
+                path.lineTo(x1, midY - yDiff);
+                path.close();
+            }
+            if (tr) {
+                path.moveTo(x2, y1 - curveRadius - yDiff);
+                path.cubicTo(x2, y1 - yDiff, x2, midY - yDiff, x2 - curveRadius, midY - yDiff);
+                path.lineTo(x2, midY - yDiff);
+                path.close();
+            }
+        }
+        if (br && bl) {
+            //br
+            path.moveTo(x2, y2 + yDiff);
+            path.cubicTo(x2, y2 + yDiff, x2, midY + yDiff, x2 - curveRadius, midY + yDiff);
+            path.lineTo(x2, midY + yDiff);
+            //bl
+            path.moveTo(x1, y2 + yDiff);
+            path.cubicTo(x1, y2 + yDiff, x1, midY + yDiff, x1 + curveRadius, midY + yDiff);
+            path.lineTo(x1, midY + yDiff);
+            path.close();
+        } else {
+            if (br) {
+                path.moveTo(x2, y2 + yDiff);
+                path.cubicTo(x2, y2 + yDiff, x2, midY + yDiff, x2 - curveRadius, midY + yDiff);
+                path.lineTo(x2, midY + yDiff);
+                path.close();
+            }
+            if (bl) {
+                path.moveTo(x1, y2 + yDiff);
+                path.cubicTo(x1, y2 + yDiff, x1, midY + yDiff, x1 + curveRadius, midY + yDiff);
+                path.lineTo(x1, midY + yDiff);
+                path.close();
+            }
+        }
         return path;
     }
 

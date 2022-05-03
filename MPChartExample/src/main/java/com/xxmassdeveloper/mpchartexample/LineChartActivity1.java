@@ -195,7 +195,12 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
     private void setData(int count, float range) {
 
         ArrayList<Entry> values = new ArrayList<>();
-
+//        values.add(new Entry(0, 1, getResources().getDrawable(R.drawable.star)));
+//        values.add(new Entry(1, 3, getResources().getDrawable(R.drawable.star)));
+//        values.add(new Entry(2, 1, getResources().getDrawable(R.drawable.star)));
+//        values.add(new Entry(3, 2, getResources().getDrawable(R.drawable.star)));
+//        values.add(new Entry(4, 2, getResources().getDrawable(R.drawable.star)));
+//        values.add(new Entry(5, 3, getResources().getDrawable(R.drawable.star)));
         for (int i = 0; i < count; i++) {
 
             float val = (float) (new Random().nextInt(4));
