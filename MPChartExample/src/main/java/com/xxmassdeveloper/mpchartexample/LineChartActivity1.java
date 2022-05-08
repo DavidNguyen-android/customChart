@@ -66,7 +66,7 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_linechart);
+        setContentView(R.layout.activity_stepped_linechart);
 
         setTitle("LineChartActivity1");
 

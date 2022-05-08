@@ -12,7 +12,6 @@ import android.view.WindowManager;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.CombinedChart.DrawOrder;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
@@ -54,31 +53,30 @@ public class CombinedChartActivity extends DemoBase {
 
         chart = findViewById(R.id.chart1);
         chart.getDescription().setEnabled(false);
-        chart.setBackgroundColor(Color.WHITE);
+        chart.setBackgroundColor(Color.GRAY);
         chart.setDrawGridBackground(false);
         chart.setDrawBarShadow(false);
         chart.setHighlightFullBarEnabled(false);
-
         // draw bars behind lines
         chart.setDrawOrder(new DrawOrder[]{
-                DrawOrder.BAR, DrawOrder.BUBBLE, DrawOrder.CANDLE, DrawOrder.LINE, DrawOrder.SCATTER
+                DrawOrder.LINE
         });
 
-        Legend l = chart.getLegend();
-        l.setWordWrapEnabled(true);
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        l.setDrawInside(false);
+//        Legend l = chart.getLegend();
+//        l.setWordWrapEnabled(true);
+//        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+//        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+//        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+//        l.setDrawInside(false);
 
         YAxis rightAxis = chart.getAxisRight();
         rightAxis.setDrawGridLines(false);
         rightAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+        rightAxis.setAxisMaximum(150f);
 
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setDrawGridLines(false);
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxisPosition.BOTH_SIDED);
         xAxis.setAxisMinimum(0f);
@@ -93,10 +91,10 @@ public class CombinedChartActivity extends DemoBase {
         CombinedData data = new CombinedData();
 
         data.setData(generateLineData());
-        data.setData(generateBarData());
-        data.setData(generateBubbleData());
-        data.setData(generateScatterData());
-        data.setData(generateCandleData());
+//        data.setData(generateBarData());
+//        data.setData(generateBubbleData());
+//        data.setData(generateScatterData());
+//        data.setData(generateCandleData());
         data.setValueTypeface(tfLight);
 
         xAxis.setAxisMaximum(data.getXMax() + 0.25f);
@@ -119,8 +117,10 @@ public class CombinedChartActivity extends DemoBase {
         set.setLineWidth(2.5f);
         set.setCircleColor(Color.rgb(240, 238, 70));
         set.setCircleRadius(5f);
+        set.setDrawCircles(true);
+        set.setDrawCircleHole(true);
         set.setFillColor(Color.rgb(240, 238, 70));
-        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
         set.setDrawValues(true);
         set.setValueTextSize(10f);
         set.setValueTextColor(Color.rgb(240, 238, 70));
