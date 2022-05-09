@@ -213,11 +213,12 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
                 chart.getData().getDataSetCount() > 0) {
             set1 = (LineDataSet) chart.getData().getDataSetByIndex(0);
             set1.setDrawValues(false);
+            set1.setDrawCircles(false);
             int[] colors = {
-                    Color.RED,
-                    Color.YELLOW,
-                    Color.BLUE,
-                    Color.DKGRAY,
+                    ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_1),
+                    ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_2),
+                    ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_3),
+                    ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_4),
             };
             final LinearGradient gradient = new LinearGradient(
                     0f, chart.getHeight(), 0f, 0f,

@@ -1,4 +1,3 @@
-
 package com.xxmassdeveloper.mpchartexample;
 
 import android.content.Intent;
@@ -39,8 +38,8 @@ import java.util.ArrayList;
 
 public class CombinedChartActivity extends DemoBase {
 
-    private CombinedChart chart;
     private final int count = 12;
+    private CombinedChart chart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,13 +111,35 @@ public class CombinedChartActivity extends DemoBase {
         for (int index = 0; index < count; index++)
             entries.add(new Entry(index + 0.5f, getRandom(15, 5)));
 
+        int[] colors = new int[entries.size()];
+        Integer maxValueIndex = null, minValueIndex = null;
+        Float maxValue = null, minValue = null;
+        for (int index = 0; index < entries.size(); index++) {
+            colors[index] = Color.TRANSPARENT;
+            Entry e = entries.get(index);
+            if (maxValue == null || maxValue < e.getY()) {
+                maxValue = e.getY();
+                maxValueIndex = index;
+            }
+            if (minValue == null || minValue > e.getY()) {
+                minValue = e.getY();
+                minValueIndex = index;
+            }
+        }
+        if (maxValueIndex != null) {
+            colors[maxValueIndex] = Color.RED;
+        }
+        if (minValueIndex != null) {
+            colors[minValueIndex] = Color.YELLOW;
+        }
+
         LineDataSet set = new LineDataSet(entries, "Line DataSet");
+        set.setDrawCircleHole(false);
         set.setColor(Color.rgb(240, 238, 70));
         set.setLineWidth(2.5f);
-        set.setCircleColor(Color.rgb(240, 238, 70));
+        set.setCircleColors(colors);
         set.setCircleRadius(5f);
         set.setDrawCircles(true);
-        set.setDrawCircleHole(true);
         set.setFillColor(Color.rgb(240, 238, 70));
         set.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
         set.setDrawValues(true);
@@ -129,107 +150,6 @@ public class CombinedChartActivity extends DemoBase {
         d.addDataSet(set);
 
         return d;
-    }
-
-    private BarData generateBarData() {
-
-        ArrayList<BarEntry> entries1 = new ArrayList<>();
-        ArrayList<BarEntry> entries2 = new ArrayList<>();
-
-        for (int index = 0; index < count; index++) {
-            entries1.add(new BarEntry(0, getRandom(25, 25)));
-
-            // stacked
-            entries2.add(new BarEntry(0, new float[]{getRandom(13, 12), getRandom(13, 12)}));
-        }
-
-        BarDataSet set1 = new BarDataSet(entries1, "Bar 1");
-        set1.setColor(Color.rgb(60, 220, 78));
-        set1.setValueTextColor(Color.rgb(60, 220, 78));
-        set1.setValueTextSize(10f);
-        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-
-        BarDataSet set2 = new BarDataSet(entries2, "");
-        set2.setStackLabels(new String[]{"Stack 1", "Stack 2"});
-        set2.setColors(Color.rgb(61, 165, 255), Color.rgb(23, 197, 255));
-        set2.setValueTextColor(Color.rgb(61, 165, 255));
-        set2.setValueTextSize(10f);
-        set2.setAxisDependency(YAxis.AxisDependency.LEFT);
-
-        float groupSpace = 0.06f;
-        float barSpace = 0.02f; // x2 dataset
-        float barWidth = 0.45f; // x2 dataset
-        // (0.45 + 0.02) * 2 + 0.06 = 1.00 -> interval per "group"
-
-        BarData d = new BarData(set1, set2);
-        d.setBarWidth(barWidth);
-
-        // make this BarData object grouped
-        d.groupBars(0, groupSpace, barSpace); // start at x = 0
-
-        return d;
-    }
-
-    private ScatterData generateScatterData() {
-
-        ScatterData d = new ScatterData();
-
-        ArrayList<Entry> entries = new ArrayList<>();
-
-        for (float index = 0; index < count; index += 0.5f)
-            entries.add(new Entry(index + 0.25f, getRandom(10, 55)));
-
-        ScatterDataSet set = new ScatterDataSet(entries, "Scatter DataSet");
-        set.setColors(ColorTemplate.MATERIAL_COLORS);
-        set.setScatterShapeSize(7.5f);
-        set.setDrawValues(false);
-        set.setValueTextSize(10f);
-        d.addDataSet(set);
-
-        return d;
-    }
-
-    private CandleData generateCandleData() {
-
-        CandleData d = new CandleData();
-
-        ArrayList<CandleEntry> entries = new ArrayList<>();
-
-        for (int index = 0; index < count; index += 2)
-            entries.add(new CandleEntry(index + 1f, 110, 70, 100, 75f));
-
-        CandleDataSet set = new CandleDataSet(entries, "Candle DataSet");
-        set.setDecreasingColor(Color.rgb(142, 150, 175));
-        set.setShadowColor(Color.DKGRAY);
-        set.setBarSpace(0.3f);
-        set.setValueTextSize(10f);
-        set.setDrawValues(false);
-        d.addDataSet(set);
-
-        return d;
-    }
-
-    private BubbleData generateBubbleData() {
-
-        BubbleData bd = new BubbleData();
-
-        ArrayList<BubbleEntry> entries = new ArrayList<>();
-
-        for (int index = 0; index < count; index++) {
-            float y = getRandom(10, 105);
-            float size = getRandom(100, 105);
-            entries.add(new BubbleEntry(index + 0.5f, y, size));
-        }
-
-        BubbleDataSet set = new BubbleDataSet(entries, "Bubble DataSet");
-        set.setColors(ColorTemplate.VORDIPLOM_COLORS);
-        set.setValueTextSize(10f);
-        set.setValueTextColor(Color.WHITE);
-        set.setHighlightCircleWidth(1.5f);
-        set.setDrawValues(true);
-        bd.addDataSet(set);
-
-        return bd;
     }
 
     @Override

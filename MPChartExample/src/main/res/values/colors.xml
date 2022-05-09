@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="stepped_chart_color_1">#465887</color>
+    <color name="stepped_chart_color_2">#8ab0ce</color>
+    <color name="stepped_chart_color_3">#aea383</color>
+    <color name="stepped_chart_color_4">#a25764</color>
+</resources>

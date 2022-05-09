@@ -255,8 +255,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         // Removes clipping rectangle
         canvas.restoreToCount(clipRestoreCount);
 
-        //David draw point
-//        mRenderer.drawExtras(canvas);
+        mRenderer.drawExtras(canvas);
 
         if (mXAxis.isEnabled() && !mXAxis.isDrawLimitLinesBehindDataEnabled())
             mXAxisRenderer.renderLimitLines(canvas);
@@ -287,8 +286,6 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         drawDescription(canvas);
 
         drawMarkers(canvas);
-
-        mRenderer.drawExtras(canvas);
 
         if (mLogEnabled) {
             long drawtime = (System.currentTimeMillis() - starttime);
