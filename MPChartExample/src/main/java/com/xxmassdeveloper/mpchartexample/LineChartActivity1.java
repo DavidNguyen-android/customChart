@@ -33,9 +33,11 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.SteppedLineData;
 import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.dataprovider.SteppedLineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.renderer.custom.SteppedYAxisValueFormatter;
@@ -267,6 +269,11 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
                 public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
                     return chart.getAxisLeft().getAxisMinimum();
                 }
+
+                @Override
+                public float getFillLinePosition(ILineDataSet dataSet, SteppedLineDataProvider dataProvider) {
+                    return chart.getAxisLeft().getAxisMinimum();
+                }
             });
 
             // set color of filled area
@@ -284,7 +291,7 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
             dataSets.add(set1); // add the data sets
 
             // create a data object with the data sets
-            LineData data = new LineData(dataSets);
+            SteppedLineData data = new SteppedLineData(dataSets);
             // set data
             chart.setData(data);
         }

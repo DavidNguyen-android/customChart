@@ -1,11 +1,11 @@
-
 package com.github.mikephil.charting.charts.custom;
 
 import android.content.Context;
 import android.util.AttributeSet;
 
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.data.SteppedLineData;
+import com.github.mikephil.charting.interfaces.dataprovider.SteppedLineDataProvider;
 import com.github.mikephil.charting.renderer.custom.SteppedLineChartRenderer;
 
 /**
@@ -13,7 +13,7 @@ import com.github.mikephil.charting.renderer.custom.SteppedLineChartRenderer;
  *
  * @author Philipp Jahoda
  */
-public class SteppedLineChart extends SteppedBarLineChartBase<LineData> implements LineDataProvider {
+public class SteppedLineChart extends SteppedBarLineChartBase<SteppedLineData> implements SteppedLineDataProvider {
 
     public SteppedLineChart(Context context) {
         super(context);
@@ -35,7 +35,7 @@ public class SteppedLineChart extends SteppedBarLineChartBase<LineData> implemen
     }
 
     @Override
-    public LineData getLineData() {
+    public SteppedLineData getSteppedLineData() {
         return mData;
     }
 
@@ -47,4 +47,5 @@ public class SteppedLineChart extends SteppedBarLineChartBase<LineData> implemen
         }
         super.onDetachedFromWindow();
     }
+
 }

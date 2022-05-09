@@ -2,7 +2,9 @@ package com.github.mikephil.charting.formatter;
 
 
 import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.SteppedLineData;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.dataprovider.SteppedLineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 /**
@@ -21,6 +23,35 @@ public class DefaultFillFormatter implements IFillFormatter
         float chartMinY = dataProvider.getYChartMin();
 
         LineData data = dataProvider.getLineData();
+
+        if (dataSet.getYMax() > 0 && dataSet.getYMin() < 0) {
+            fillMin = 0f;
+        } else {
+
+            float max, min;
+
+            if (data.getYMax() > 0)
+                max = 0f;
+            else
+                max = chartMaxY;
+            if (data.getYMin() < 0)
+                min = 0f;
+            else
+                min = chartMinY;
+
+            fillMin = dataSet.getYMin() >= 0 ? min : max;
+        }
+
+        return fillMin;
+    }
+
+    @Override
+    public float getFillLinePosition(ILineDataSet dataSet, SteppedLineDataProvider dataProvider) {
+        float fillMin = 0f;
+        float chartMaxY = dataProvider.getYChartMax();
+        float chartMinY = dataProvider.getYChartMin();
+
+        SteppedLineData data = dataProvider.getSteppedLineData();
 
         if (dataSet.getYMax() > 0 && dataSet.getYMin() < 0) {
             fillMin = 0f;

@@ -18,6 +18,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.dataprovider.SteppedLineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.xxmassdeveloper.mpchartexample.notimportant.DemoBase;
 
@@ -127,6 +128,13 @@ public class FilledLineActivity extends DemoBase {
                     // return 0;
                     return chart.getAxisLeft().getAxisMinimum();
                 }
+
+                @Override
+                public float getFillLinePosition(ILineDataSet dataSet, SteppedLineDataProvider dataProvider) {
+                    // change the return value here to better understand the effect
+                    // return 0;
+                    return chart.getAxisLeft().getAxisMinimum();
+                }
             });
 
             // create a dataset and give it a type
@@ -144,6 +152,13 @@ public class FilledLineActivity extends DemoBase {
             set2.setFillFormatter(new IFillFormatter() {
                 @Override
                 public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
+                    // change the return value here to better understand the effect
+                    // return 600;
+                    return chart.getAxisLeft().getAxisMaximum();
+                }
+
+                @Override
+                public float getFillLinePosition(ILineDataSet dataSet, SteppedLineDataProvider dataProvider) {
                     // change the return value here to better understand the effect
                     // return 600;
                     return chart.getAxisLeft().getAxisMaximum();

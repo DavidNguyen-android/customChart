@@ -23,6 +23,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.dataprovider.SteppedLineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.xxmassdeveloper.mpchartexample.notimportant.DemoBase;
@@ -139,6 +140,11 @@ public class CubicLineChartActivity extends DemoBase implements OnSeekBarChangeL
             set1.setFillFormatter(new IFillFormatter() {
                 @Override
                 public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
+                    return chart.getAxisLeft().getAxisMinimum();
+                }
+
+                @Override
+                public float getFillLinePosition(ILineDataSet dataSet, SteppedLineDataProvider dataProvider) {
                     return chart.getAxisLeft().getAxisMinimum();
                 }
             });

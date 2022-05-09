@@ -2,6 +2,7 @@ package com.xxmassdeveloper.mpchartexample.custom;
 
 import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.dataprovider.SteppedLineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 /**
@@ -19,6 +20,12 @@ public class MyFillFormatter implements IFillFormatter
 
     @Override
     public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
+        // your logic could be here
+        return fillPos;
+    }
+
+    @Override
+    public float getFillLinePosition(ILineDataSet dataSet, SteppedLineDataProvider dataProvider) {
         // your logic could be here
         return fillPos;
     }

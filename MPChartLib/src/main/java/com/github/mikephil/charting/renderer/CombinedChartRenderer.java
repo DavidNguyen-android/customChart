@@ -10,6 +10,7 @@ import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.BarLineScatterCandleBubbleDataProvider;
+import com.github.mikephil.charting.renderer.custom.SteppedLineChartRenderer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.lang.ref.WeakReference;
@@ -62,6 +63,10 @@ public class CombinedChartRenderer extends DataRenderer {
                 case LINE:
                     if (chart.getLineData() != null)
                         mRenderers.add(new LineChartRenderer(chart, mAnimator, mViewPortHandler));
+                    break;
+                case LINE_STEPPED:
+                    if (chart.getSteppedLineData() != null)
+                        mRenderers.add(new SteppedLineChartRenderer(chart, mAnimator, mViewPortHandler));
                     break;
                 case CANDLE:
                     if (chart.getCandleData() != null)

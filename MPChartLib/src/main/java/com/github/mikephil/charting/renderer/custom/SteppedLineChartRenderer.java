@@ -13,8 +13,9 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.SteppedLineData;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.dataprovider.SteppedLineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.renderer.LineRadarRenderer;
@@ -31,7 +32,7 @@ import java.util.List;
 
 public class SteppedLineChartRenderer extends LineRadarRenderer {
 
-    protected LineDataProvider mChart;
+    protected SteppedLineDataProvider mChart;
 
     /**
      * paint for the inner circle of the value indicators
@@ -58,7 +59,7 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
     protected Path cubicPath = new Path();
     protected Path cubicFillPath = new Path();
 
-    public SteppedLineChartRenderer(LineDataProvider chart, ChartAnimator animator,
+    public SteppedLineChartRenderer(SteppedLineDataProvider chart, ChartAnimator animator,
                                     ViewPortHandler viewPortHandler) {
         super(animator, viewPortHandler);
         mChart = chart;
@@ -93,7 +94,7 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
 
         drawBitmap.eraseColor(Color.TRANSPARENT);
 
-        LineData lineData = mChart.getLineData();
+        SteppedLineData lineData = mChart.getSteppedLineData();
 
         for (ILineDataSet set : lineData.getDataSets()) {
 
@@ -284,7 +285,7 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
     }
 
     private float[] mLineBuffer = new float[4];
-    private float[] mBodyBuffers = new float[4];
+    private final float[] mBodyBuffers = new float[4];
 
     /**
      * Draws a normal line.
@@ -476,9 +477,9 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
                             );
 
                             mRenderPaint.setStyle(Paint.Style.FILL);
+                            mRenderPaint.setColor(Color.GRAY);
                             mRenderPaint.setStrokeWidth(strokeWidth);
                             canvas.drawPath(p, mRenderPaint);
-                            mRenderPaint.setStyle(Paint.Style.FILL);
                             p = drawCurvedArrow(mBodyBuffers[0], mBodyBuffers[3],
                                     mBodyBuffers[2], mBodyBuffers[1], radius, tlCurved, trCurved, brCurved, blCurved);
                             canvas.drawPath(p, mRenderPaint);
@@ -496,7 +497,7 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
                     trans.pointValuesToPixel(mLineBuffer);
 
                     final int size = Math.max((mXBounds.range + 1) * pointsPerEntryPair, pointsPerEntryPair) * 2;
-                    mRenderPaint.setColor(dataSet.getColor());
+                    mRenderPaint.setColor(Color.GRAY);
                     canvas.drawLines(mLineBuffer, 0, size, mRenderPaint);
                 }
             }
@@ -715,7 +716,7 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
 
         if (isDrawingValuesAllowed(mChart)) {
 
-            List<ILineDataSet> dataSets = mChart.getLineData().getDataSets();
+            List<ILineDataSet> dataSets = mChart.getSteppedLineData().getDataSets();
 
             for (int i = 0; i < dataSets.size(); i++) {
 
@@ -789,12 +790,12 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
     /**
      * cache for the circle bitmaps of all datasets
      */
-    private HashMap<IDataSet, DataSetImageCache> mImageCaches = new HashMap<>();
+    private final HashMap<IDataSet, DataSetImageCache> mImageCaches = new HashMap<>();
 
     /**
      * buffer for drawing the circles
      */
-    private float[] mCirclesBuffer = new float[2];
+    private final float[] mCirclesBuffer = new float[2];
 
     protected void drawCircles(Canvas c) {
 
@@ -805,7 +806,7 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
         mCirclesBuffer[0] = 0;
         mCirclesBuffer[1] = 0;
 
-        List<ILineDataSet> dataSets = mChart.getLineData().getDataSets();
+        List<ILineDataSet> dataSets = mChart.getSteppedLineData().getDataSets();
 
         for (int i = 0; i < dataSets.size(); i++) {
 
@@ -877,7 +878,7 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
     @Override
     public void drawHighlighted(Canvas c, Highlight[] indices) {
 
-        LineData lineData = mChart.getLineData();
+        SteppedLineData lineData = mChart.getSteppedLineData();
 
         for (Highlight high : indices) {
 
@@ -942,7 +943,7 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
 
     private class DataSetImageCache {
 
-        private Path mCirclePathBuffer = new Path();
+        private final Path mCirclePathBuffer = new Path();
 
         private Bitmap[] circleBitmaps;
 

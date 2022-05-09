@@ -2,11 +2,18 @@ package com.xxmassdeveloper.mpchartexample;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+
+import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.CombinedChart.DrawOrder;
@@ -14,27 +21,24 @@ import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.BubbleData;
-import com.github.mikephil.charting.data.BubbleDataSet;
-import com.github.mikephil.charting.data.BubbleEntry;
-import com.github.mikephil.charting.data.CandleData;
-import com.github.mikephil.charting.data.CandleDataSet;
-import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.ScatterData;
-import com.github.mikephil.charting.data.ScatterDataSet;
+import com.github.mikephil.charting.data.SteppedLineData;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IFillFormatter;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.dataprovider.SteppedLineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.renderer.custom.SteppedYAxisValueFormatter;
+import com.github.mikephil.charting.utils.Utils;
 import com.xxmassdeveloper.mpchartexample.notimportant.DemoBase;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class CombinedChartActivity extends DemoBase {
 
@@ -52,13 +56,14 @@ public class CombinedChartActivity extends DemoBase {
 
         chart = findViewById(R.id.chart1);
         chart.getDescription().setEnabled(false);
-        chart.setBackgroundColor(Color.GRAY);
+        chart.setBackgroundColor(Color.TRANSPARENT);
         chart.setDrawGridBackground(false);
         chart.setDrawBarShadow(false);
         chart.setHighlightFullBarEnabled(false);
         // draw bars behind lines
         chart.setDrawOrder(new DrawOrder[]{
-                DrawOrder.LINE
+                DrawOrder.LINE_STEPPED,
+                DrawOrder.LINE,
         });
 
 //        Legend l = chart.getLegend();
@@ -70,8 +75,13 @@ public class CombinedChartActivity extends DemoBase {
 
         YAxis rightAxis = chart.getAxisRight();
         rightAxis.setDrawGridLines(false);
-        rightAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-        rightAxis.setAxisMaximum(150f);
+        // disable grid lines
+        rightAxis.setDrawGridLines(false);
+        rightAxis.setValueFormatter(new SteppedYAxisValueFormatter());
+        rightAxis.setLabelCount(4);
+        // axis range
+        rightAxis.setAxisMaximum(3.2f);
+        rightAxis.setAxisMinimum(-0.2f);
 
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setDrawGridLines(false);
@@ -90,7 +100,7 @@ public class CombinedChartActivity extends DemoBase {
         CombinedData data = new CombinedData();
 
         data.setData(generateLineData());
-//        data.setData(generateBarData());
+        data.setData(generateSteppedLineData());
 //        data.setData(generateBubbleData());
 //        data.setData(generateScatterData());
 //        data.setData(generateCandleData());
@@ -149,6 +159,91 @@ public class CombinedChartActivity extends DemoBase {
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         d.addDataSet(set);
 
+        return d;
+    }
+
+    private SteppedLineData generateSteppedLineData() {
+
+        SteppedLineData d = new SteppedLineData();
+        ArrayList<Entry> values = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            float val = (float) (new Random().nextInt(4));
+            values.add(new Entry(i, val, getResources().getDrawable(R.drawable.star)));
+        }
+
+        LineDataSet set = new LineDataSet(values, "DataSet 1");
+        set.setDrawIcons(false);
+
+        // draw dashed line
+        set.enableDashedLine(10f, 5f, 0f);
+
+        // black lines and points
+        set.setDrawValues(false);
+        set.setDrawCircles(false);
+//        int[] colors = {
+//                ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_1),
+//                ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_2),
+//                ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_3),
+//                ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_4),
+//        };
+//        final LinearGradient gradient = new LinearGradient(
+//                0f, chart.getHeight(), 0f, 0f,
+//                colors, null,
+//                Shader.TileMode.REPEAT);
+//        Paint paint = chart.getRenderer().getPaintRender();
+//        paint.setShader(gradient);
+        set.setEntries(values);
+
+        set.setColor(Color.GRAY);
+        set.setCircleColor(Color.GRAY);
+
+        // line thickness and point size
+        set.setLineWidth(1f);
+        set.setCircleRadius(4f);
+
+        // draw points as solid circles
+        set.setDrawCircleHole(false);
+
+        // customize legend entry
+        set.setFormLineWidth(1f);
+        set.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
+        set.setFormSize(15.f);
+
+        // text size of values
+        set.setValueTextSize(9f);
+
+        // draw selection line as dashed
+        set.enableDashedHighlightLine(10f, 5f, 0f);
+
+        // set the filled area
+        set.setDrawFilled(true);
+        set.setFillFormatter(new IFillFormatter() {
+            @Override
+            public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
+                return chart.getAxisLeft().getAxisMinimum();
+            }
+
+            @Override
+            public float getFillLinePosition(ILineDataSet dataSet, SteppedLineDataProvider dataProvider) {
+                return chart.getAxisLeft().getAxisMinimum();
+            }
+        });
+
+        // set color of filled area
+        if (Utils.getSDKInt() >= 18) {
+            // drawables only supported on api level 18 and above
+            Drawable drawable = ContextCompat.getDrawable(this, R.drawable.fade_red);
+            set.setFillDrawable(drawable);
+        } else {
+            set.setFillColor(Color.BLACK);
+        }
+        set.setMode(LineDataSet.Mode.STEPPED);
+        set.setDrawFilled(false);
+        set.enableDashedLine(1f, 0f, 5f);
+        // create a data object with the data sets
+        // set data
+        set.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        d.addDataSet(set);
         return d;
     }
 

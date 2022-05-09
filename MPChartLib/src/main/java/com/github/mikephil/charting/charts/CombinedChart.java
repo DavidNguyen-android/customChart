@@ -13,6 +13,7 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.data.SteppedLineData;
 import com.github.mikephil.charting.highlight.CombinedHighlighter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.CombinedDataProvider;
@@ -52,7 +53,7 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
      * for the combined-chart are drawn
      */
     public enum DrawOrder {
-        BAR, BUBBLE, LINE, CANDLE, SCATTER
+        BAR, BUBBLE, LINE, LINE_STEPPED, CANDLE, SCATTER
     }
 
     public CombinedChart(Context context) {
@@ -73,7 +74,7 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
 
         // Default values are not ready here yet
         mDrawOrder = new DrawOrder[]{
-                DrawOrder.BAR, DrawOrder.BUBBLE, DrawOrder.LINE, DrawOrder.CANDLE, DrawOrder.SCATTER
+                DrawOrder.BAR, DrawOrder.BUBBLE, DrawOrder.LINE,DrawOrder.LINE_STEPPED, DrawOrder.CANDLE, DrawOrder.SCATTER
         };
 
         setHighlighter(new CombinedHighlighter(this, this));
@@ -128,6 +129,13 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
         if (mData == null)
             return null;
         return mData.getLineData();
+    }
+
+    @Override
+    public SteppedLineData getSteppedLineData() {
+        if (mData == null)
+            return null;
+        return mData.getSteppedLineData();
     }
 
     @Override
