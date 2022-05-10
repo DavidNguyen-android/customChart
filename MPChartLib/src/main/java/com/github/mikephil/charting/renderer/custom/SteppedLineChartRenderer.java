@@ -466,8 +466,8 @@ public class SteppedLineChartRenderer extends LineRadarRenderer {
                                 br = true;
                                 trCurved = true;
                             }
-                            Log.d("david", "drawLinear: previousY : " + previousY + ", firstY: " + firstY);
-                            Log.d("david", "drawLinear: tl: " + tl + ", tr: " + tr + ", br: " + br + ", bl: " + bl);
+//                            Log.d("david", "drawLinear: previousY : " + previousY + ", firstY: " + firstY);
+//                            Log.d("david", "drawLinear: tl: " + tl + ", tr: " + tr + ", br: " + br + ", bl: " + bl);
                             final float strokeWidth = 3f;
                             final float radius = 20f;
                             p = roundedRect(

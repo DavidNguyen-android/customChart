@@ -213,6 +213,7 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
 
         if (chart.getData() != null &&
                 chart.getData().getDataSetCount() > 0) {
+            Log.d("david", "setData: 1");
             set1 = (LineDataSet) chart.getData().getDataSetByIndex(0);
             set1.setDrawValues(false);
             set1.setDrawCircles(false);
@@ -233,6 +234,8 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
             chart.getData().notifyDataChanged();
             chart.notifyDataSetChanged();
         } else {
+            Log.d("david", "setData: 2");
+
             // create a dataset and give it a type
             set1 = new LineDataSet(values, "DataSet 1");
             set1.setDrawIcons(false);

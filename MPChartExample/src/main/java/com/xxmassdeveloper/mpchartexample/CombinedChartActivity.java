@@ -155,6 +155,7 @@ public class CombinedChartActivity extends DemoBase {
         set.setDrawValues(true);
         set.setValueTextSize(10f);
         set.setValueTextColor(Color.rgb(240, 238, 70));
+        set.enableDashedLine(5f, 5f, 0f);
 
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         d.addDataSet(set);
