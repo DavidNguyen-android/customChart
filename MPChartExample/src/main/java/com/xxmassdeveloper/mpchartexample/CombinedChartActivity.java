@@ -87,7 +87,7 @@ public class CombinedChartActivity extends DemoBase {
         leftAxis.setDrawGridLines(false);
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
         XAxis xAxis = chart.getXAxis();
-        xAxis.setPosition(XAxisPosition.BOTH_SIDED);
+        xAxis.setPosition(XAxisPosition.BOTTOM);
         xAxis.setAxisMinimum(0f);
         xAxis.setGranularity(1f);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
@@ -143,7 +143,7 @@ public class CombinedChartActivity extends DemoBase {
             colors[minValueIndex] = Color.YELLOW;
         }
 
-        LineDataSet set = new LineDataSet(entries, "Line DataSet");
+        LineDataSet set = new LineDataSet(entries, "");
         set.setDrawCircleHole(false);
         set.setColor(Color.rgb(240, 238, 70));
         set.setLineWidth(2.5f);
@@ -171,7 +171,7 @@ public class CombinedChartActivity extends DemoBase {
             values.add(new Entry(i, val, getResources().getDrawable(R.drawable.star)));
         }
 
-        LineDataSet set = new LineDataSet(values, "DataSet 1");
+        LineDataSet set = new LineDataSet(values, "");
         set.setDrawIcons(false);
 
         // draw dashed line
