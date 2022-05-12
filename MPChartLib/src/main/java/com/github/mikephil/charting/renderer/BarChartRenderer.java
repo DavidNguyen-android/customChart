@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.buffer.BarBuffer;
@@ -178,6 +179,13 @@ public class BarChartRenderer extends BarLineScatterCandleBubbleRenderer {
                                 isInverted ? Fill.Direction.DOWN : Fill.Direction.UP);
             }
             else {
+                BarEntry e = dataSet.getEntryForIndex(pos);
+                final Object data = e.getData();
+                if(data instanceof Integer){
+                    mRenderPaint.setColor((int)data);
+                    Log.d("david", "drawDataSet: " + (int)data);
+                }
+
                 Path path = roundedRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
                         buffer.buffer[j + 3], 15,15,true, true, true, true);
                 c.drawPath(path, mRenderPaint);

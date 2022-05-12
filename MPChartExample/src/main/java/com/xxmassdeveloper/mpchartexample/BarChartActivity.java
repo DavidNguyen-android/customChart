@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
-import com.github.mikephil.charting.charts.custom.DateOfMonthBarChart;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.Legend.LegendForm;
 import com.github.mikephil.charting.components.XAxis;
@@ -46,7 +46,7 @@ import java.util.ArrayList;
 public class BarChartActivity extends DemoBase implements OnSeekBarChangeListener,
         OnChartValueSelectedListener {
 
-    private DateOfMonthBarChart chart;
+    private BarChart chart;
     private SeekBar seekBarX, seekBarY;
     private TextView tvX, tvY;
 
@@ -146,10 +146,14 @@ public class BarChartActivity extends DemoBase implements OnSeekBarChangeListene
         for (int i = (int) start; i < start + count; i++) {
             float val = (float) (Math.random() * (range + 1));
 
-            if (Math.random() * 100 < 25) {
-                values.add(new BarEntry(i, val, getResources().getDrawable(R.drawable.star)));
-            } else {
-                values.add(new BarEntry(i, val));
+            if (Math.random() * 100 < 75) {
+                values.add(new BarEntry(i, val, ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_3)));
+            } else if (Math.random() * 100 < 50) {
+                values.add(new BarEntry(i, val, ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_2)));
+            } else if (Math.random() * 100 < 25) {
+                values.add(new BarEntry(i, val, ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_1)));
+            }else {
+                values.add(new BarEntry(i, val, ContextCompat.getColor(getApplicationContext(), R.color.stepped_chart_color_4)));
             }
         }
 
