@@ -14,7 +14,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.github.mikephil.charting.charts.BarLineChartBase;
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.components.YAxis.AxisDependency;
@@ -22,6 +22,7 @@ import com.github.mikephil.charting.data.BarLineScatterCandleBubbleData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.ChartHighlighter;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.dataprovider.BarLineScatterCandleBubbleDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IBarLineScatterCandleBubbleDataSet;
 import com.github.mikephil.charting.jobs.AnimatedMoveViewJob;
 import com.github.mikephil.charting.jobs.AnimatedZoomJob;
@@ -29,9 +30,9 @@ import com.github.mikephil.charting.jobs.MoveViewJob;
 import com.github.mikephil.charting.jobs.ZoomJob;
 import com.github.mikephil.charting.listener.BarLineChartTouchListener;
 import com.github.mikephil.charting.listener.OnDrawListener;
+import com.github.mikephil.charting.renderer.custom.SteppedBarLineChartTouchListener;
+import com.github.mikephil.charting.renderer.custom.SteppedXAxisRenderer;
 import com.github.mikephil.charting.renderer.custom.SteppedYAxisRender;
-import com.github.mikephil.charting.renderer.XAxisRenderer;
-import com.github.mikephil.charting.renderer.YAxisRenderer;
 import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Transformer;
@@ -45,7 +46,7 @@ import com.github.mikephil.charting.utils.Utils;
 @SuppressLint("RtlHardcoded")
 public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubbleData<? extends
         IBarLineScatterCandleBubbleDataSet<? extends Entry>>>
-        extends BarLineChartBase<T> {
+        extends Chart<T> implements BarLineScatterCandleBubbleDataProvider {
 
     /**
      * the maximum number of entries to which values will be drawn
@@ -129,13 +130,12 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
     protected YAxis mAxisRight;
 
     protected SteppedYAxisRender mAxisRendererLeft;
-    protected YAxisRenderer mAxisRendererRight;
+    protected SteppedYAxisRender mAxisRendererRight;
 
     protected Transformer mLeftAxisTransformer;
     protected Transformer mRightAxisTransformer;
 
-    protected XAxisRenderer mXAxisRenderer;
-
+    protected SteppedXAxisRenderer mXAxisRenderer;
     // /** the approximator object used for data filtering */
     // private Approximator mApproximator;
 
@@ -162,13 +162,13 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
         mRightAxisTransformer = new Transformer(mViewPortHandler);
 
         mAxisRendererLeft = new SteppedYAxisRender(mViewPortHandler, mAxisLeft, mLeftAxisTransformer);
-        mAxisRendererRight = new YAxisRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer);
+        mAxisRendererRight = new SteppedYAxisRender(mViewPortHandler, mAxisRight, mRightAxisTransformer);
 
-        mXAxisRenderer = new XAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer);
+        mXAxisRenderer = new SteppedXAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer);
 
         setHighlighter(new ChartHighlighter(this));
 
-        mChartTouchListener = new BarLineChartTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f);
+        mChartTouchListener = new SteppedBarLineChartTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f);
 
         mGridBackgroundPaint = new Paint();
         mGridBackgroundPaint.setStyle(Style.FILL);
@@ -1538,7 +1538,7 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
         return mViewPortHandler.hasNoDragOffset();
     }
 
-    public XAxisRenderer getRendererXAxis() {
+    public SteppedXAxisRenderer getSteppedRendererXAxis() {
         return mXAxisRenderer;
     }
 
@@ -1547,7 +1547,7 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
      *
      * @param xAxisRenderer
      */
-    public void setXAxisRenderer(XAxisRenderer xAxisRenderer) {
+    public void setXAxisRenderer(SteppedXAxisRenderer xAxisRenderer) {
         mXAxisRenderer = xAxisRenderer;
     }
 
@@ -1564,7 +1564,7 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
         mAxisRendererLeft = rendererLeftYAxis;
     }
 
-    public YAxisRenderer getRendererRightYAxis() {
+    public SteppedYAxisRender getSteppedRendererRightYAxis() {
         return mAxisRendererRight;
     }
 
@@ -1573,7 +1573,7 @@ public abstract class SteppedBarLineChartBase<T extends BarLineScatterCandleBubb
      *
      * @param rendererRightYAxis
      */
-    public void setRendererRightYAxis(YAxisRenderer rendererRightYAxis) {
+    public void setRendererRightYAxis(SteppedYAxisRender rendererRightYAxis) {
         mAxisRendererRight = rendererRightYAxis;
     }
 

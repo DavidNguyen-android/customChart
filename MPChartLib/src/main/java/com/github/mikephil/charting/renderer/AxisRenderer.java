@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.util.Log;
 
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.utils.MPPointD;
@@ -147,6 +148,7 @@ public abstract class AxisRenderer extends Renderer {
      * @return
      */
     protected void computeAxisValues(float min, float max) {
+        Log.d("david", "computeAxisValues: " + this);
 
         float yMin = min;
         float yMax = max;
@@ -198,6 +200,7 @@ public abstract class AxisRenderer extends Renderer {
             float v = min;
 
             for (int i = 0; i < labelCount; i++) {
+                Log.d("david", "computeAxisValues: " + this + " labelCount: " + labelCount);
                 mAxis.mEntries[i] = v;
                 v += interval;
             }

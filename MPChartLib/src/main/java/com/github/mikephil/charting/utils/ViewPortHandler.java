@@ -3,6 +3,7 @@ package com.github.mikephil.charting.utils;
 
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -598,11 +599,13 @@ public class ViewPortHandler {
     }
 
     public boolean isInBoundsLeft(float x) {
+        Log.d("david", "isInBoundsLeft: " + mContentRect.left);
         return mContentRect.left <= x + 1;
     }
 
     public boolean isInBoundsRight(float x) {
         x = (float) ((int) (x * 100.f)) / 100.f;
+        Log.d("david", "isInBoundsRight: " + mContentRect.right);
         return mContentRect.right >= x - 1;
     }
 

@@ -31,7 +31,6 @@ import com.github.mikephil.charting.components.LimitLine.LimitLabelPosition;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.SteppedLineData;
 import com.github.mikephil.charting.formatter.IFillFormatter;
@@ -121,7 +120,10 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
             xAxis = chart.getXAxis();
 // disable grid lines
             xAxis.setDrawGridLines(false);
-            // vertical grid lines
+            xAxis.setEnabled(true);
+            xAxis.mEntries = new float[]{21f,22f,23f,0f,1f,2f,3f,4f,5f};
+            xAxis.mCenteredEntries = new float[]{21f,22f,23f,0f,1f,2f,3f,4f,5f};
+            xAxis.mEntryCount = xAxis.mEntries.length;
 //            xAxis.enableGridDashedLine(10f, 10f, 0f);
         }
         YAxis yAxis;
@@ -131,6 +133,7 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
 
             // disable dual axis (only use LEFT axis)
             chart.getAxisRight().setEnabled(false);
+            chart.getAxisLeft().setEnabled(false);
 
             // disable grid lines
             yAxis.setDrawGridLines(false);
@@ -166,7 +169,7 @@ public class LineChartActivity1 extends DemoBase implements OnSeekBarChangeListe
 
             // draw limit lines behind data instead of on top
             yAxis.setDrawLimitLinesBehindData(true);
-            xAxis.setDrawLimitLinesBehindData(true);
+//            xAxis.setDrawLimitLinesBehindData(true);
 
             // add limit lines
 //            yAxis.addLimitLine(ll1);
