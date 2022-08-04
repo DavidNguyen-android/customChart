@@ -3,12 +3,16 @@ package com.github.mikephil.charting.renderer;
 
 import android.graphics.Canvas;
 import android.graphics.Paint.Align;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.buffer.BarBuffer;
 import com.github.mikephil.charting.buffer.HorizontalBarBuffer;
+import com.github.mikephil.charting.charts.custom.HorizontalBarChartData;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IValueFormatter;
@@ -146,8 +150,15 @@ public class HorizontalBarChartRenderer extends BarChartRenderer {
                                 isInverted ? Fill.Direction.LEFT : Fill.Direction.RIGHT);
             }
             else {
-                c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
-                        buffer.buffer[j + 3], mRenderPaint);
+                BarEntry entry = dataSet.getEntryForIndex(0);
+                final Object data = entry.getData();
+                if (data instanceof HorizontalBarChartData) {
+                    c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2] - 20,
+                            buffer.buffer[j + 3], mRenderPaint);
+                } else {
+                    c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
+                            buffer.buffer[j + 3], mRenderPaint);
+                }
             }
 
             if (drawBorder) {
@@ -225,11 +236,37 @@ public class HorizontalBarChartRenderer extends BarChartRenderer {
                         }
 
                         if (dataSet.isDrawValuesEnabled()) {
-                            drawValue(c,
-                                    formattedValue,
-                                    buffer.buffer[j + 2] + (val >= 0 ? posOffset : negOffset),
-                                    y + halfTextHeight,
-                                    dataSet.getValueTextColor(j / 2));
+                            final Object data = entry.getData();
+                            if (data instanceof HorizontalBarChartData) {
+
+                                String rateValue = ((HorizontalBarChartData) data).getValueRate();
+                                String timeValue = ((HorizontalBarChartData) data).getValueTime();
+
+                                // calculate the correct offset depending on the draw position of the value
+                                float rateValueTextWidth = Utils.calcTextWidth(mValuePaint, rateValue);
+                                float timeValueTextWidth = Utils.calcTextWidth(mValuePaint, timeValue);
+                                SpannableStringBuilder sp = new SpannableStringBuilder();
+                                sp.append("1").append(" 時間 ");
+                                sp.setSpan(new RelativeSizeSpan(0.5f), 2, 3, 0);
+                                drawTimeSpannableString(c, sp, buffer.buffer[j + 2] + rateValueTextWidth + valueOffsetPlus - timeValueTextWidth, y + halfTextHeight);
+
+                                drawValue(c,
+                                        rateValue,
+                                        buffer.buffer[0],
+                                        y + halfTextHeight,
+                                        dataSet.getValueTextColor(j / 2));
+//                                drawValue(c,
+//                                        timeValue,
+//                                        buffer.buffer[j + 2] + rateValueTextWidth + valueOffsetPlus - timeValueTextWidth,
+//                                        y + halfTextHeight,
+//                                        dataSet.getValueTextColor(j / 2));
+                            } else {
+                                drawValue(c,
+                                        formattedValue,
+                                        buffer.buffer[j + 2] + (val >= 0 ? posOffset : negOffset),
+                                        y + halfTextHeight,
+                                        dataSet.getValueTextColor(j / 2));
+                            }
                         }
 
                         if (entry.getIcon() != null && dataSet.isDrawIconsEnabled()) {
@@ -410,6 +447,25 @@ public class HorizontalBarChartRenderer extends BarChartRenderer {
                 MPPointF.recycleInstance(iconsOffset);
             }
         }
+    }
+
+    private void drawTimeSpannableString(Canvas canvas, SpannableStringBuilder spannableString, float x, float y) {
+        float xStart = x;
+        final float textSize = mValuePaint.getTextSize();
+        final float space = 3f;
+        final Rect bounds = new Rect();
+        for (int i = 0; i < spannableString.length(); i ++) {
+           final char c = spannableString.charAt(i);
+           if(Character.isDigit(c)){
+               mValuePaint.setTextSize(textSize);
+           }else {
+               mValuePaint.setTextSize(textSize / 2);
+           }
+            canvas.drawText(String.valueOf(c), xStart, y, mValuePaint);
+            mValuePaint.getTextBounds(String.valueOf(c),0,1, bounds);
+            xStart +=  bounds.right + space;
+        }
+        mValuePaint.setTextSize(textSize);
     }
 
     protected void drawValue(Canvas c, String valueText, float x, float y, int color) {

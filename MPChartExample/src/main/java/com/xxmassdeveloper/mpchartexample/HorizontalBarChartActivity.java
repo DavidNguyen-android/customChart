@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +15,10 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.github.mikephil.charting.charts.HorizontalBarChart;
+import com.github.mikephil.charting.charts.custom.HorizontalBarChartData;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
@@ -107,7 +109,7 @@ public class HorizontalBarChartActivity extends DemoBase implements OnSeekBarCha
 
         // setting data
         seekBarY.setProgress(50);
-        seekBarX.setProgress(12);
+        seekBarX.setProgress(4);
 
         Legend l = chart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
@@ -126,8 +128,7 @@ public class HorizontalBarChartActivity extends DemoBase implements OnSeekBarCha
 
         for (int i = 0; i < count; i++) {
             float val = (float) (Math.random() * range);
-            values.add(new BarEntry(i * spaceForBar, val,
-                    getResources().getDrawable(R.drawable.star)));
+            values.add(new BarEntry(i * spaceForBar, val, new HorizontalBarChartData("10%", "1h30p")));
         }
 
         BarDataSet set1;
